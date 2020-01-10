@@ -479,8 +479,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fc47c96f0e1284590db11d5a4345da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 600
-  width: 800
+  height: 768
+  width: 1024
   window: {fileID: 1273154242}
 --- !u!81 &1850511965
 AudioListener:
