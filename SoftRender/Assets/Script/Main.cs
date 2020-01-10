@@ -39,17 +39,20 @@ public class Main
             Vector3 scenecoord2 = new Vector3((int)((v1.x +1.0f)*_elyot3D.width/2.0f),(int)((v1.y +1.0f)*_elyot3D.height/2.0f),v1.z); 
             Vector3 scenecoord3 = new Vector3((int)((v2.x +1.0f)*_elyot3D.width/2.0f),(int)((v2.y +1.0f)*_elyot3D.height/2.0f),v2.z); 
             
-            Vector3 n = Vector3.Cross(v1 - v0, v2 - v1);
+            Vector3 n = Vector3.Cross(v2 - v0, v1 - v0);
             n = n.normalized;
 
             float intensity = Vector3.Dot(n, lightDir);
             intensity = Mathf.Abs(intensity);
             
-            
             _elyot3D.triangle2(new Vector3[] {scenecoord1, scenecoord2, scenecoord3},
                 new Color(intensity, intensity, intensity, 1));
             
 //            _elyot3D.triangle(scenecoord1, scenecoord2, scenecoord3,new Color(intensity,intensity,intensity,1)); 
+
+//            _elyot3D.line((int)scenecoord1.x,(int)scenecoord1.y,(int)scenecoord2.x,(int)scenecoord2.y,Color.white);
+//            _elyot3D.line((int)scenecoord2.x,(int)scenecoord2.y,(int)scenecoord3.x,(int)scenecoord3.y,Color.white);
+//            _elyot3D.line((int)scenecoord3.x,(int)scenecoord3.y,(int)scenecoord1.x,(int)scenecoord1.y,Color.white);
         }
 
 //        Vector2[] t0 = {new Vector2(10, 70),   new Vector2(50, 160),  new Vector2(70, 80)}; 

@@ -9,17 +9,17 @@ public class Elyot3D
     
     
     //Z-buffer
-    private int[] zbuffer;
+    private float[] zbuffer;
     public void Init(int width,int height,Texture2D _renderTexture)
     {
         this.height = height;
         this.width = width;
         this.frameBuffer = _renderTexture;
         
-        zbuffer = new int[this.height * this.width];
+        zbuffer = new float[this.height * this.width];
         for (int i = 0; i < zbuffer.Length; i++)
         {
-            zbuffer[i] = int.MinValue;
+            zbuffer[i] = float.MinValue;
         }
     }
 
@@ -142,19 +142,21 @@ public class Elyot3D
                 boxmin[j] = Mathf.Max(0,Mathf.Min(boxmin[j], pts[i][j])); 
                 boxmax[j] = Mathf.Min(clamp[j], Mathf.Max(boxmax[j], pts[i][j])); 
             } 
-        } 
-        Vector3 P = new Vector3(1,1,1); 
+        }
+
+        Vector3 P = Vector3.zero;
         for (P.x=boxmin.x; P.x<=boxmax.x; P.x++) { 
             for (P.y=boxmin.y; P.y<=boxmax.y; P.y++) { 
                 Vector3 bc_screen  = barycentric(pts, P); 
                 if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue; 
                 
                 P.z = 0;
-                for (int i=0; i<3; i++) P.z += pts[i][2]*bc_screen[i];
+                for (int i=0; i<3; i++) P.z += pts[i].z*bc_screen[i];
                 if (zbuffer[(int)P.x+(int)P.y*width]<P.z) {
-                    zbuffer[(int)P.x+(int)P.y*width] = (int)P.z;
+                    zbuffer[(int)P.x+(int)P.y*width] = P.z;
                     Pixel((int)P.x, (int)P.y, color); 
                 }
+
             } 
         } 
     } 
