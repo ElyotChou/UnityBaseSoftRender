@@ -6,13 +6,21 @@ public class Elyot3D
     public int width;
 
     private Texture2D frameBuffer;
+    
+    
+    //Z-buffer
+    private int[] zbuffer;
     public void Init(int width,int height,Texture2D _renderTexture)
     {
         this.height = height;
         this.width = width;
         this.frameBuffer = _renderTexture;
         
-
+        zbuffer = new int[this.height * this.width];
+        for (int i = 0; i < zbuffer.Length; i++)
+        {
+            zbuffer[i] = int.MinValue;
+        }
     }
 
     private void Swap(ref int a,ref int b)
@@ -114,7 +122,7 @@ public class Elyot3D
         } 
     }
     
-    Vector3 barycentric(Vector2[] pts, Vector2 P) { 
+    Vector3 barycentric(Vector3[] pts, Vector3 P) { 
         Vector3 u = Vector3.Cross(new Vector3(pts[2][0]-pts[0][0], pts[1][0]-pts[0][0], pts[0][0]-P[0]),new Vector3(pts[2][1]-pts[0][1], pts[1][1]-pts[0][1], pts[0][1]-P[1]));
         /* `pts` and `P` has integer value as coordinates
            so `abs(u[2])` < 1 means `u[2]` is 0, that means
@@ -122,8 +130,9 @@ public class Elyot3D
         if (Mathf.Abs(u[2])<1) return new Vector3(-1,1,1);
         return new Vector3(1.0f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z); 
     }
-    
-    public void triangle2(Vector2[] pts,Color color) { 
+
+    //重心检测算法
+    public void triangle2(Vector3[] pts,Color color) { 
         Vector2 boxmin = new Vector2(width-1,height - 1);
         Vector2 boxmax = new Vector2(0,0);
         Vector2 clamp = new Vector2(width-1,height - 1);
@@ -134,14 +143,22 @@ public class Elyot3D
                 boxmax[j] = Mathf.Min(clamp[j], Mathf.Max(boxmax[j], pts[i][j])); 
             } 
         } 
-        Vector2 P; 
+        Vector3 P = new Vector3(1,1,1); 
         for (P.x=boxmin.x; P.x<=boxmax.x; P.x++) { 
             for (P.y=boxmin.y; P.y<=boxmax.y; P.y++) { 
                 Vector3 bc_screen  = barycentric(pts, P); 
                 if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue; 
-                Pixel((int)P.x, (int)P.y, color); 
+                
+                P.z = 0;
+                for (int i=0; i<3; i++) P.z += pts[i][2]*bc_screen[i];
+                if (zbuffer[(int)P.x+(int)P.y*width]<P.z) {
+                    zbuffer[(int)P.x+(int)P.y*width] = (int)P.z;
+                    Pixel((int)P.x, (int)P.y, color); 
+                }
             } 
         } 
     } 
+    
+    
     
 }
