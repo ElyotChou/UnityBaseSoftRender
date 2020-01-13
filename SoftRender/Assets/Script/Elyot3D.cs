@@ -7,6 +7,56 @@ public class Elyot3D
 
     private Texture2D frameBuffer;
     
+    //数学
+    public Matrix4x4 Projection(float coeff) {
+       
+        Matrix4x4 projection = Matrix4x4.identity;
+        projection.m32 = coeff;
+        return projection;
+
+    }
+    
+    public Matrix4x4 Lookat(Vector3 eye, Vector3 center, Vector3 up) {
+        
+        Vector3 z = (eye-center).normalized;
+        Vector3 x = Vector3.Cross(up,z).normalized;
+        Vector3 y = Vector3.Cross(z,x).normalized;
+        Matrix4x4 Minv = Matrix4x4.identity;
+        Matrix4x4 Tr   = Matrix4x4.identity;
+        
+        Minv.m00 = x.x;
+        Minv.m01 = x.y;
+        Minv.m02 = x.z;
+
+        Minv.m10 = y.x;
+        Minv.m11 = y.y;
+        Minv.m12 = y.z;
+        
+        Minv.m20 = z.x;
+        Minv.m21 = z.y;
+        Minv.m22 = z.z;
+        
+        Tr.m03 = -center[0];
+        Tr.m13 = -center[1];
+        Tr.m23 = -center[2];
+        
+
+        return Minv*Tr;
+    }
+    
+    public Matrix4x4 Viewport(int x, int y, int w, int h)
+    {
+        Matrix4x4 Viewport = Matrix4x4.identity;
+        
+        Viewport.m03 = x+w/2.0f;
+        Viewport.m13 = y+h/2.0f;
+        Viewport.m23 = 255/2.0f;
+        Viewport.m00 = w/2.0f;
+        Viewport.m11 = h/2.0f;
+        Viewport.m22 = 255/2.0f;
+
+        return Viewport;
+    }
     
     //Z-buffer
     private float[] zbuffer;

@@ -6,6 +6,11 @@ public class Main
     private Elyot3D _elyot3D;
     
     private LoadObj _loadObj;
+    
+    Vector3 light_dir = new Vector3(1,-1,1).normalized;
+    Vector3 eye = new Vector3(1,1,3);
+    Vector3 center = new Vector3(0,0,0);
+    
     public void main(Elyot3D elyot3D)
     {
         this._elyot3D = elyot3D;
@@ -18,7 +23,6 @@ public class Main
     public void MainFunc()
     {
         _elyot3D.SetBackgroundColor(Color.black);
-
         
 //        _elyot3D.line(13, 20, 80, 40,Color.white); 
 //        _elyot3D.line(20, 13, 40, 80,Color.red); 
@@ -35,9 +39,21 @@ public class Main
             Vector3 v1 = verts[trans[i+1]];
             Vector3 v2 =verts[trans[i + 2]];
 
-            Vector3 scenecoord1 = new Vector3((int)((v0.x +1.0f)*_elyot3D.width/2.0f),(int)((v0.y +1.0f)*_elyot3D.height/2.0f),v0.z); 
-            Vector3 scenecoord2 = new Vector3((int)((v1.x +1.0f)*_elyot3D.width/2.0f),(int)((v1.y +1.0f)*_elyot3D.height/2.0f),v1.z); 
-            Vector3 scenecoord3 = new Vector3((int)((v2.x +1.0f)*_elyot3D.width/2.0f),(int)((v2.y +1.0f)*_elyot3D.height/2.0f),v2.z); 
+            Matrix4x4 ModelView  = _elyot3D.Lookat(eye, center, new Vector3(0,1,0));
+            Matrix4x4 Projection = Matrix4x4.identity;
+            Matrix4x4 ViewPort   = _elyot3D.Viewport(_elyot3D.width/8, _elyot3D.height/8, _elyot3D.width*3/4, _elyot3D.height*3/4);
+            Projection.m32 = -1.0f / ((eye - center)).magnitude;
+            
+            
+//            Vector3 scenecoord1 = new Vector3((int)((v0.x +1.0f)*_elyot3D.width/2.0f),(int)((v0.y +1.0f)*_elyot3D.height/2.0f),v0.z); 
+//            Vector3 scenecoord2 = new Vector3((int)((v1.x +1.0f)*_elyot3D.width/2.0f),(int)((v1.y +1.0f)*_elyot3D.height/2.0f),v1.z); 
+//            Vector3 scenecoord3 = new Vector3((int)((v2.x +1.0f)*_elyot3D.width/2.0f),(int)((v2.y +1.0f)*_elyot3D.height/2.0f),v2.z); 
+
+            Vector3 scenecoord1 = ViewPort * Projection * ModelView * v0;
+            Vector3 scenecoord2 = ViewPort * Projection * ModelView * v1;
+            Vector3 scenecoord3 = ViewPort * Projection * ModelView * v2;
+//            Vector3 scenecoord2 = new Vector3((int)((v1.x +1.0f)*_elyot3D.width/2.0f),(int)((v1.y +1.0f)*_elyot3D.height/2.0f),v1.z); 
+//            Vector3 scenecoord3 = new Vector3((int)((v2.x +1.0f)*_elyot3D.width/2.0f),(int)((v2.y +1.0f)*_elyot3D.height/2.0f),v2.z); 
             
             Vector3 n = Vector3.Cross(v2 - v0, v1 - v0);
             n = n.normalized;
